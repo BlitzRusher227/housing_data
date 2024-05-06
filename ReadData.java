@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
@@ -68,19 +71,36 @@ public class ReadData {
     
     System.out.println(getAreaData().length);
     System.out.println(getPriceData().length);
-    chart.addSeries("Gaussian Blob", xData, yData);
+    chart.addSeries("House Units", xData, yData);
     chart.addSeries("lsrl", data.get(0), data.get(1));
 
     new SwingWrapper(chart).displayChart();
  
   }
+
+ public CategoryChart stickChart(){
+    CategoryChart chart = new CategoryChartBuilder().width(800).height(600).title("Stick").build();
+ 
+    // Customize Chart
+    chart.getStyler().setChartTitleVisible(true);
+    chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
+    chart.getStyler().setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Stick);
+ 
+    // Series
+    double[] xData = getAreaData();
+    double[] yData = getPriceData();
+    chart.addSeries("Area to Price", xData, yData);
+
+    return chart;
+ }
+
  
 
   
 
   public double[] getAreaData(){
     double[] data = new double[houses.size()];
-    for (int i = 0; i < houses.size(); i++){
+    for (int i = 0; i < 50; i++){
       data[i] = houses.get(i).getArea();
     }
     return data;
@@ -88,11 +108,12 @@ public class ReadData {
 
   public double[] getPriceData(){
     double[] data = new double[houses.size()];
-    for (int i = 0; i < houses.size(); i++){
+    for (int i = 0; i < 50; i++){
       data[i] = houses.get(i).getPrice();
     }
     return data;
   }
+
 
   public double deviation(double[] data){
     double deviation = 0.0;
@@ -147,23 +168,6 @@ public class ReadData {
   }
 
   public double corrCo(double[] xData, double[] yData){
-    // double numorator = 0.0;
-    //   double denom1 = 0.0;
-    //   double denom2 = 0.0;
-
-    //   for (int i = 0; i < xData.length; i++) {
-    //       numorator+=((xData[i]-avgData(xData))*(yData[i]-avgData(yData)));
-    //   }
-    //   for (int i = 0; i < xData.length; i++) {
-    //     denom1+=Math.pow(xData[i]-avgData(xData),2);  
-    //   }
-    //   for (int i = 0; i < yData.length; i++) {
-    //     denom2+=Math.pow(yData[i]-avgData(yData),2);  
-    //   }
-
-      
-      
-    //   return (numorator)/(Math.sqrt((denom1*denom2)));
     return covarieance(xData, yData)/(deviation(xData)*deviation(yData));
   }
 
@@ -201,7 +205,10 @@ public class ReadData {
 
     public static void main(String[] args) {
         ReadData r = new ReadData();
-        r.scatter(r.generateLineData(r.lsrlSlope(r.getAreaData(), r.getPriceData()), r.lsrlIntercept(r.getAreaData(), r.getPriceData())));
+        //r.scatter(r.generateLineData(r.lsrlSlope(r.getAreaData(), r.getPriceData()), r.lsrlIntercept(r.getAreaData(), r.getPriceData())));
+        //r.stick();
+        //r.plotLines();
+        new SwingWrapper<CategoryChart>(r.stickChart()).displayChart();
         // r.plotLsrl(r.generateLineData(r.lsrlSlope(r.getSugarData(), r.getRatingData()), r.lsrlIntercept(r.getSugarData(), r.getRatingData())));
         // System.out.println(r.covarieance(r.getSugarData(), r.getRatingData()));
         // System.out.println(r.deviation(r.getSugarData()));
